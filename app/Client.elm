@@ -30,7 +30,7 @@ import Main.View as Main
 import Nav.View as Nav
 import Model exposing (Model)
 import Ports exposing (..)
-import Server exposing (Gig, getApiV1Shows, decodeGig)
+import Server exposing (Gig, getV1Shows, decodeGig)
 import Types exposing (..)
 
 
@@ -100,7 +100,7 @@ init { cachedGigs, now } location =
     in
         model
             ! [ locationToScroll location |> snapIntoView
-              , Http.send ShowResponse getApiV1Shows
+              , Http.send ShowResponse getV1Shows
               , postInit <| List.map querySelector pages
               ]
 
