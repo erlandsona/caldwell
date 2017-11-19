@@ -33,6 +33,16 @@ css =
                     , fontSize (pct 93)
                     , fontWeight (int 300)
                     ]
+              , mediaQuery "screen and (max-width: 900px)"
+                    [ body
+                        [ fontSize (pct 83)
+                        ]
+                    ]
+              , mediaQuery "screen and (max-width: 500px)"
+                    [ body
+                        [ fontSize (pct 70)
+                        ]
+                    ]
               , h1 [ fontSize (pct 250), fontWeight inherit ]
               , h2 [ fontSize (pct 240), fontWeight inherit ]
               , h3 [ fontSize (pct 225), fontWeight inherit ]

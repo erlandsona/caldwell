@@ -71,25 +71,35 @@ css =
         ]
     , class Gigs
         [ children
-            [ mediaQuery "screen and ( max-width: 500px )"
+            [ class Gig
+                [ displayFlex
+                , flexFlow2 row wrap
+                , children
+                    [ span
+                        [ flex (num 2)
+                        , textAlign left
+                        , lastOfType
+                            [ flex (num 1)
+                            , textAlign right
+                            ]
+                        ]
+                    ]
+                ]
+            , mediaQuery "screen and (max-width: 500px)"
                 [ class Gig
                     [ justifyContent spaceAround
                     , children
                         [ span
-                            [ nthChild "2"
+                            [ flex initial
+                            , nthChild "2"
                                 [ order (num -1)
-                                , width (pct 100)
+                                , flexBasis (pct 100)
                                 , textAlign center
                                 , marginBottom (px 17)
                                 ]
                             ]
                         ]
                     ]
-                ]
-            , class Gig
-                [ displayFlex
-                , flexFlow2 row wrap
-                , justifyContent spaceBetween
                 ]
             ]
         , children [ fadingHr darkGrey ]

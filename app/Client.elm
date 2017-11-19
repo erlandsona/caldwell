@@ -230,11 +230,11 @@ update action model =
                             ! []
 
                 Err msg ->
-                    -- let
-                    --     _ =
-                    --         Debug.log "Shows Reponse" <| toString msg
-                    -- in
-                    model ! []
+                    let
+                        _ =
+                            Debug.log "Shows Reponse" <| toString msg
+                    in
+                        model ! []
 
         Header move ->
             if model.scrolling then
