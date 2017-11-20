@@ -10,7 +10,8 @@ type alias Model =
     , currentPage : Page
     , scrollTargets : List Float
     , scrolling : Bool
-    , nav : Nav
+    , nav : Switch
     , shows : List Gig
+    , showPrevious : Bool
     , today : Date
     }

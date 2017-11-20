@@ -65,6 +65,19 @@ css =
         , children
             [ h2
                 [ textAlign center
+                , position relative
+                , children
+                    [ a
+                        [ position absolute
+                        , textAlign right
+                        , marginTop (Css.em -1)
+                        , textDecoration underline
+                        , bottom (px 5)
+                        , right (zero)
+                        , fontSize initial
+                        , cursor pointer
+                        ]
+                    ]
                 ]
             , fadingHr lightGrey
             ]
@@ -74,35 +87,27 @@ css =
             [ class Gig
                 [ displayFlex
                 , flexFlow2 row wrap
-                , children
-                    [ span
-                        [ flex (num 2)
-                        , textAlign left
-                        , lastOfType
-                            [ flex (num 1)
-                            , textAlign right
-                            ]
-                        ]
-                    ]
+                , justifyContent spaceBetween
                 ]
             , mediaQuery "screen and (max-width: 500px)"
                 [ class Gig
-                    [ justifyContent spaceAround
-                    , children
+                    [ children
                         [ span
                             [ flex initial
-                            , nthChild "2"
-                                [ order (num -1)
-                                , flexBasis (pct 100)
-                                , textAlign center
-                                , marginBottom (px 17)
-                                ]
+                            , flexBasis (pct 100)
+                            , textAlign center
+                            , lineHeight (num 1.25)
                             ]
                         ]
                     ]
                 ]
             ]
-        , children [ fadingHr darkGrey ]
+        , children
+            [ fadingHr darkGrey
+            , mediaQuery "screen and (max-width: 500px)"
+                [ selector ".homepage_Gigs > fading-hr" [ margin2 (px 10) zero ]
+                ]
+            ]
         ]
     , class (Main Music)
         [ children

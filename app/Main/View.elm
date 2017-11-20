@@ -4,6 +4,7 @@ module Main.View exposing (template)
 
 import Css exposing (Mixin, num, opacity)
 import Date exposing (Date, day, month)
+import Date.Extra.Compare exposing (Compare2(..), is)
 import Date.Extra.Config.Config_en_us as C_en_us
 import Date.Extra.Format exposing (format)
 import Date.Extra.I18n.I_en_us exposing (dayOfMonthWithSuffix, monthName)
@@ -12,6 +13,8 @@ import FontAwesome.Web as Icon
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.CssHelpers exposing (withNamespace)
+import Html.Events exposing (onClick)
+import String.Extra exposing (replace)
 
 
 -- Source
@@ -49,7 +52,7 @@ template model =
             , socialLink "reverbnation" "caldwellband" Icon.star
             ]
         , section [ class [ Section, Main About ] ] Bio.template
-        , section [ class [ Section, Main Shows ] ] [ caldwellCalendar_ model.shows ]
+        , section [ class [ Section, Main Shows ] ] [ caldwellCalendar_ model ]
         , section [ class [ Section, Main Music ] ]
             [ h2 [] [ text (toString Music) ]
             , fadingHr
@@ -79,36 +82,60 @@ template model =
         ]
 
 
-caldwellCalendar_ : List Gig -> Html a
-caldwellCalendar_ gigs =
-    node caldwellCalendar
-        []
-        [ h2 [] [ text (toString Shows) ]
-        , fadingHr
-        , ul [ class [ Gigs ] ] <|
-            List.intersperse fadingHr <|
-                List.map (gigToElmHtml) gigs
-        ]
+caldwellCalendar_ : Model -> Html Action
+caldwellCalendar_ { showPrevious, shows, today } =
+    let
+        beforeOrAfter =
+            if showPrevious then
+                Before
+            else
+                SameOrAfter
+    in
+        node caldwellCalendar
+            []
+            [ h2 []
+                [ text (toString Shows)
+                , a [ onClick TogglePreviousShows ]
+                    [ text
+                        (if showPrevious then
+                            "Upcoming"
+                         else
+                            "Previous"
+                        )
+                    ]
+                ]
+            , fadingHr
+            , ul [ class [ Gigs ] ]
+                ((if showPrevious then
+                    List.reverse shows
+                  else
+                    shows
+                 )
+                    |> List.filter (.gigDate >> flip (is beforeOrAfter) today)
+                    |> List.map (gigToElmHtml)
+                    |> List.intersperse fadingHr
+                )
+            ]
 
 
 gigToElmHtml : Gig -> Html a
 gigToElmHtml { gigDate, gigVenue } =
-    li [ class [ Types.Gig ] ] <|
-        List.map
-            (\string ->
-                span [] [ text string ]
-            )
-            [ dayStringer gigDate
-            , gigVenue
-            , format C_en_us.config "%l:%M%P" gigDate
-            ]
+    li [ class [ Types.Gig ] ]
+        [ span [] [ text gigVenue ]
+        , span [] [ text <| dayStringer gigDate ]
+        ]
 
 
 dayStringer : Date -> String
 dayStringer date =
-    (monthName <| month date)
+    (String.left 3 <| monthName <| month date)
         ++ " "
         ++ (dayOfMonthWithSuffix False <| day date)
+        ++ " "
+        ++ "`"
+        ++ (String.right 2 <| toString <| Date.year date)
+        ++ " "
+        ++ replace ":00" "" (format C_en_us.config "%l:%M%P" date)
 
 
 soundCloudiFrameBaseUrl : String

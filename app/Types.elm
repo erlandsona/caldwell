@@ -30,7 +30,8 @@ type Action
     | ScrollTo Page
     | Stop ()
     | UpdateUrlWith Page
-    | Toggle Nav
+    | ToggleNav Switch
+    | TogglePreviousShows
     | SetPageTops (List Float)
     | ShowResponse (Result Http.Error (List Gig))
       -- the message emitted by the input port
@@ -55,6 +56,6 @@ type alias ClassName =
     String
 
 
-type Nav
+type Switch
     = Open
     | Closed

@@ -36,7 +36,7 @@ template model =
                     []
                 )
             , class [ NavBar () ]
-            , clickWithStopProp (Toggle Closed)
+            , clickWithStopProp (ToggleNav Closed)
             ]
             [ aTag Home
             , aTag About
@@ -52,7 +52,7 @@ template model =
                         []
                     )
                 , class [ NavBar "handle" ]
-                , clickWithStopProp (Toggle <| not model.nav)
+                , clickWithStopProp (ToggleNav <| not model.nav)
                 ]
                 [ li [] [] ]
             ]
@@ -65,7 +65,7 @@ aTag page =
         ]
 
 
-not : Nav -> Nav
+not : Switch -> Switch
 not navState =
     case navState of
         Open ->

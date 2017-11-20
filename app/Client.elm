@@ -7,7 +7,6 @@ import Css exposing (num, opacity)
 import Css.Helpers
 import Debug
 import Date exposing (Date)
-import Date.Extra.Compare exposing (Compare2(..), is)
 import Http
 import Html exposing (Html, header, node, span, text)
 import Html.Events exposing (onClick)
@@ -58,12 +57,6 @@ decodeLocalStorageGigs =
     unpack (\() -> Debug.log "No shows in local storage." []) decodedGigs
 
 
-filterAndSort : Date -> List Gig -> List Gig
-filterAndSort today =
-    List.filter (.gigDate >> flip (is SameOrAfter) today)
-        >> List.sortBy (.gigDate >> Date.toTime)
-
-
 init : Initializer -> Location -> ( Model, Cmd Action )
 init { cachedGigs, now } location =
     let
@@ -95,7 +88,8 @@ init { cachedGigs, now } location =
             , scrollTargets = []
             , nav = Closed
             , today = today
-            , shows = filterAndSort today gigs
+            , shows = gigs
+            , showPrevious = False
             }
     in
         model
@@ -142,7 +136,7 @@ urlParser =
 view : Model -> Html Action
 view model =
     node container
-        [ onClick (Toggle Closed)
+        [ onClick (ToggleNav Closed)
         ]
         [ node caldwellBackground [] []
         , node blackOverlay
@@ -216,8 +210,11 @@ update action model =
                     }
                         ! []
 
-        Toggle nav ->
-            { model | nav = nav } ! []
+        ToggleNav newState ->
+            { model | nav = newState } ! []
+
+        TogglePreviousShows ->
+            { model | showPrevious = not model.showPrevious } ! []
 
         ShowResponse response ->
             case response of
@@ -226,8 +223,7 @@ update action model =
                         _ =
                             List.map (Debug.log "Gig Date:" << .gigDate) shows
                     in
-                        { model | shows = filterAndSort model.today shows }
-                            ! []
+                        { model | shows = shows } ! []
 
                 Err msg ->
                     let
