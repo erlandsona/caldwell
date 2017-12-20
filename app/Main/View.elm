@@ -32,54 +32,58 @@ import Types exposing (..)
 
 template : Model -> Html Action
 template model =
-    main_
-        [ styles
-            (if model.currentPage == Home then
-                []
-             else
-                (if model.nav == Open then
-                    [ opacity (num 0.25) ]
-                 else
+    let
+        _ =
+            Debug.log "MAIN: Rendered!" ()
+    in
+        main_
+            [ styles
+                (if model.currentPage == Home then
                     []
+                 else
+                    (if model.nav == Open then
+                        [ opacity (num 0.25) ]
+                     else
+                        []
+                    )
                 )
-            )
-        , class [ Main () ]
-        ]
-        [ section [ class [ Section, Main Home ] ]
-            [ socialLink "facebook" "CaldwellBand" Social.facebook_square
-            , socialLink "twitter" "caldwell_band" Social.twitter_square
-            , socialLink "instagram" "caldwell_band" Social.instagram
-            , socialLink "reverbnation" "caldwellband" Icon.star
+            , class [ Main () ]
             ]
-        , section [ class [ Section, Main About ] ] Bio.template
-        , section [ class [ Section, Main Shows ] ] [ caldwellCalendar_ model ]
-        , section [ class [ Section, Main Music ] ]
-            [ h2 [] [ text (toString Music) ]
-            , fadingHr
-            , iframe
-                [ seamless True
-                , src <| soundCloudiFrameBaseUrl ++ "276527707" ++ soundCloudiFrameParams
+            [ section [ class [ Section, Main Home ] ]
+                [ socialLink "facebook" "CaldwellBand" Social.facebook_square
+                , socialLink "twitter" "caldwell_band" Social.twitter_square
+                , socialLink "instagram" "caldwell_band" Social.instagram
+                , socialLink "reverbnation" "caldwellband" Icon.star
                 ]
-                []
-            , fadingHr
-            , iframe
-                [ seamless True
-                , src <| soundCloudiFrameBaseUrl ++ "278360717" ++ soundCloudiFrameParams
+            , section [ class [ Section, Main About ] ] Bio.template
+            , section [ class [ Section, Main Shows ] ] [ caldwellCalendar_ model ]
+            , section [ class [ Section, Main Music ] ]
+                [ h2 [] [ text (toString Music) ]
+                , fadingHr
+                , iframe
+                    [ seamless True
+                    , src <| soundCloudiFrameBaseUrl ++ "276527707" ++ soundCloudiFrameParams
+                    ]
+                    []
+                , fadingHr
+                , iframe
+                    [ seamless True
+                    , src <| soundCloudiFrameBaseUrl ++ "278360717" ++ soundCloudiFrameParams
+                    ]
+                    []
+                , fadingHr
+                , iframe
+                    [ seamless True
+                    , src <| soundCloudiFrameBaseUrl ++ "192483435" ++ soundCloudiFrameParams
+                    ]
+                    []
                 ]
-                []
-            , fadingHr
-            , iframe
-                [ seamless True
-                , src <| soundCloudiFrameBaseUrl ++ "192483435" ++ soundCloudiFrameParams
+            , section [ class [ Section, Main Contact ] ]
+                [ h2 [] [ text (toString Contact) ]
+                , fadingHr
+                , a [ href "mailto:booking@caldwell.band" ] [ text "booking@caldwell.band" ]
                 ]
-                []
             ]
-        , section [ class [ Section, Main Contact ] ]
-            [ h2 [] [ text (toString Contact) ]
-            , fadingHr
-            , a [ href "mailto:booking@caldwell.band" ] [ text "booking@caldwell.band" ]
-            ]
-        ]
 
 
 caldwellCalendar_ : Model -> Html Action
@@ -90,6 +94,16 @@ caldwellCalendar_ { showPrevious, shows, today } =
                 Before
             else
                 SameOrAfter
+
+        filterSort =
+            List.filter (.gigDate >> flip (is beforeOrAfter) today)
+                >> List.sortBy (.gigDate >> Date.toTime)
+
+        showsList =
+            if showPrevious then
+                List.reverse << filterSort
+            else
+                filterSort
     in
         node caldwellCalendar
             []
@@ -106,12 +120,7 @@ caldwellCalendar_ { showPrevious, shows, today } =
                 ]
             , fadingHr
             , ul [ class [ Gigs ] ]
-                ((if showPrevious then
-                    List.reverse shows
-                  else
-                    shows
-                 )
-                    |> List.filter (.gigDate >> flip (is beforeOrAfter) today)
+                (showsList shows
                     |> List.map (gigToElmHtml)
                     |> List.intersperse fadingHr
                 )

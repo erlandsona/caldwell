@@ -26,14 +26,15 @@ css =
         , margin auto
         , prop "-webkit-overflow-scrolling" "touch"
         , padding4
-            (Css.rem 7)
             -- Top
-            (Css.rem <| gutterSize.numericValue * 3)
+            (Css.rem 7)
             -- Right
-            zero
-            -- Bottom
+            -- (Css.rem <| gutterSize.numericValue * 3)
             gutterSize
-          -- Left
+            -- Bottom
+            zero
+            -- Left
+            gutterSize
         ]
     , class (Main Home)
         [ displayFlex
@@ -45,8 +46,11 @@ css =
     , class (Main "socialLink")
         [ display inlineBlock
         , marginRight gutterSize
+        , firstOfType
+            [ marginLeft gutterSize
+            ]
         , children
-            [ i [ fontSize (Css.rem 1.5) ]
+            [ i [ fontSize (pct 150) ]
             ]
         ]
     , class (Main About)

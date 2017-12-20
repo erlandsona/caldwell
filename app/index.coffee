@@ -15,6 +15,8 @@ class App
       @initializeScrollTargets classNames
       @setupScrollSubscription()
 
+    @ports.getScrollTargets.subscribe @initializeScrollTargets
+
     # Smooth Scrolling between Nav Links
     @ports.easeIntoView.subscribe (className) =>
       @setScrolling()
@@ -35,12 +37,15 @@ class App
     , 1000
 
   initializeScrollTargets: (classNames) =>
-    elems = classNames.map (className) =>
-      document.querySelector className
-    bottoms = elems.map (e) =>
-      # 250 px from the bottom to update routes.
-      (e.offsetTop + e.offsetHeight) - 250
-    @ports.scrollTargets.send bottoms
+    setTimeout =>
+      console.log '#initializeScrollTargets'
+      elems = classNames.map (className) =>
+        document.querySelector className
+      bottoms = elems.map (e) =>
+        # 250 px from the bottom to update routes.
+        (e.offsetTop + e.offsetHeight) - 250
+      @ports.setScrollTargets.send bottoms
+    , 100
 
   setupScrollSubscription: =>
     scroll = @getCurrentScrollPosition()
@@ -49,7 +54,7 @@ class App
       newScroll =  @getCurrentScrollPosition()
       @ports.scroll.send [scroll, newScroll]
       scroll = newScroll
-    , 30
+    , 60
 
   getCurrentScrollPosition: =>
     window.pageYOffset or

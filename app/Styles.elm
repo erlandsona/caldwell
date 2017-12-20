@@ -96,7 +96,7 @@ css =
                     [ prop "user-select" "none"
                     , fontFamily cursive
                     , fontFamilies [ "Megrim" ]
-                    , fontSize titleHeight
+                    , fontSize (pct 270)
                     , cursor pointer
                     , position fixed
                     , right zero

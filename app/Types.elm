@@ -32,11 +32,12 @@ type Action
     | UpdateUrlWith Page
     | ToggleNav Switch
     | TogglePreviousShows
+    | GetPageTops
     | SetPageTops (List Float)
     | ShowResponse (Result Http.Error (List Gig))
       -- the message emitted by the input port
       -- brings a tuple with previous and current scroll values
-    | Header Move
+    | ScrollBar Move
 
 
 

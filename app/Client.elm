@@ -8,10 +8,11 @@ import Css.Helpers
 import Debug
 import Date exposing (Date)
 import Http
-import Html exposing (Html, header, node, span, text)
-import Html.Events exposing (onClick)
+import Html exposing (Html, Attribute, header, node, span, text)
 import Html.CssHelpers exposing (withNamespace)
-import Json.Decode exposing (decodeValue, int, keyValuePairs, maybe, string)
+import Html.Events exposing (onClick, onWithOptions, Options)
+import Html.Lazy as LHtml
+import Json.Decode exposing (decodeValue, int, keyValuePairs, maybe, string, succeed)
 import Json.Encode exposing (Value)
 import Maybe exposing (withDefault)
 import Maybe.Extra exposing (unpack)
@@ -95,7 +96,7 @@ init { cachedGigs, now } location =
         model
             ! [ locationToScroll location |> snapIntoView
               , Http.send ShowResponse getV1Shows
-              , postInit <| List.map querySelector pages
+              , postInit scrollTargetNames
               ]
 
 
@@ -112,6 +113,11 @@ querySelector =
     (++) "."
         << Css.Helpers.identifierToString homepage
         << Main
+
+
+scrollTargetNames : List ClassName
+scrollTargetNames =
+    List.map querySelector pages
 
 
 parse : Location -> Page
@@ -135,26 +141,47 @@ urlParser =
 
 view : Model -> Html Action
 view model =
-    node container
-        [ onClick (ToggleNav Closed)
-        ]
-        [ node caldwellBackground [] []
-        , node blackOverlay
-            (case model.currentPage of
-                Home ->
-                    []
+    let
+        not : Switch -> Switch
+        not navState =
+            case navState of
+                Open ->
+                    Closed
 
-                _ ->
-                    [ styles [ opacity (num 0.9) ] ]
-            )
-            []
-        , header [ onClick (ScrollTo Home) ]
-            [ span [] [ text "C" ]
-            , text "aldwell"
+                Closed ->
+                    Open
+
+        clickWithStopProp : Action -> Attribute Action
+        clickWithStopProp action =
+            -- Options stopProp prevDefault
+            onWithOptions "click" (Options True False) (succeed action)
+
+        { currentPage, nav } =
+            model
+
+        _ =
+            Debug.log "TOP LEVEL: Rendered!" ()
+    in
+        node container
+            [ onClick (ToggleNav Closed)
             ]
-        , Nav.template model
-        , Main.template model
-        ]
+            [ node caldwellBackground [] []
+            , node blackOverlay
+                (case model.currentPage of
+                    Home ->
+                        []
+
+                    _ ->
+                        [ styles [ opacity (num 0.9) ] ]
+                )
+                []
+            , header [ clickWithStopProp (ToggleNav <| not model.nav) ]
+                [ span [] [ text "C" ]
+                , text "aldwell"
+                , LHtml.lazy2 Nav.template currentPage nav
+                ]
+            , LHtml.lazy Main.template model
+            ]
 
 
 update : Action -> Model -> ( Model, Cmd Action )
@@ -214,16 +241,23 @@ update action model =
             { model | nav = newState } ! []
 
         TogglePreviousShows ->
-            { model | showPrevious = not model.showPrevious } ! []
+            let
+                newModel =
+                    { model | showPrevious = not model.showPrevious }
+
+                _ =
+                    Debug.log "showPrevious" newModel.showPrevious
+            in
+                update GetPageTops newModel
 
         ShowResponse response ->
             case response of
                 Ok shows ->
-                    let
-                        _ =
-                            List.map (Debug.log "Gig Date:" << .gigDate) shows
-                    in
-                        { model | shows = shows } ! []
+                    -- let
+                    --     _ =
+                    --         List.map (Debug.log "Gig Date:" << .gigDate) shows
+                    -- in
+                    { model | shows = shows } ! []
 
                 Err msg ->
                     let
@@ -232,7 +266,7 @@ update action model =
                     in
                         model ! []
 
-        Header move ->
+        ScrollBar move ->
             if model.scrolling then
                 let
                     indexedPageTops =
@@ -272,6 +306,10 @@ update action model =
         SetPageTops scrollTargets ->
             { model | scrollTargets = scrollTargets } ! []
 
+        GetPageTops ->
+            model
+                ! [ getScrollTargets scrollTargetNames ]
+
 
 urlFrom : Page -> String
 urlFrom =
@@ -291,7 +329,7 @@ main =
 subscriptions : Model -> Sub Action
 subscriptions _ =
     Sub.batch
-        [ scroll Header
+        [ scroll ScrollBar
         , scrollStart Stop
-        , scrollTargets SetPageTops
+        , setScrollTargets SetPageTops
         ]

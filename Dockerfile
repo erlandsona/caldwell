@@ -5,16 +5,8 @@ FROM fpco/stack-build:lts-9.10
 
 RUN apt-get update
 RUN apt-get upgrade -y --assume-yes
-
 # Install packages needed for libraries used by our app.
-RUN apt-get install -y --assume-yes curl
-RUN curl -sL https://deb.nodesource.com/setup_8.x \
-  | su -c bash -
-
-RUN apt-get install -y --assume-yes \
-  libpq-dev \
-  g++ \
-  nodejs
+RUN apt-get install -y --assume-yes libpq-dev g++
 
 # Remove apt caches to reduce the size of our container.
 # RUN rm -rf /var/lib/apt/lists/*

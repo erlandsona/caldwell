@@ -21,11 +21,13 @@ css =
         , prop "justify-content" "space-around"
         , prop "align-items" "flex-end"
         , prop "transition" "0.3s"
+        , prop "transition-timing-function" "cubic-bezier(0.93, -0.11, 0.4, 1.27)"
         , position fixed
         , right zero
         , cursor pointer
-        , height (vh 50)
-        , margin2 (vh 25) zero
+        , height (px 300)
+        , margin4 (Css.rem 1) zero zero zero
+        , fontSize initial
         , backgroundColor transparent
         , prop "-ms-transform" "translateX(110%)"
         , prop "transform" <| "translate3d(calc(100% + " ++ gutterSize.value ++ "), 0, 0)"
@@ -40,6 +42,7 @@ css =
         , prop "justify-content" "flex-end"
         , textDecoration none
         , borderBottom3 (px 1) solid transparent
+        , marginBottom (px 27)
         , prop "transition" "0.25s"
         , width (pct 0)
         , prop "white-space" "nowrap"
@@ -49,10 +52,6 @@ css =
         , fontSize (pct 175)
         , fontFamily sansSerif
         , fontFamilies [ "Megrim" ]
-        , hover
-            [ borderBottom2 (px 1) solid
-            , width (pct 110)
-            ]
         , children
             [ span
                 [ marginRight gutterSize ]

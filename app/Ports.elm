@@ -7,13 +7,16 @@ import Scroll exposing (Move)
 -- Cmd's -> JS
 
 
+port postInit : List ClassName -> Cmd action
+
+
+port getScrollTargets : List ClassName -> Cmd action
+
+
 port easeIntoView : ClassName -> Cmd action
 
 
 port snapIntoView : ClassName -> Cmd action
-
-
-port postInit : List ClassName -> Cmd action
 
 
 
@@ -26,4 +29,4 @@ port scroll : (Move -> action) -> Sub action
 port scrollStart : (() -> action) -> Sub action
 
 
-port scrollTargets : (List Float -> action) -> Sub action
+port setScrollTargets : (List Float -> action) -> Sub action
