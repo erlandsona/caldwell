@@ -8,31 +8,50 @@ services:
   #     - '80:80'
   #   depends_on:
   #     - web
+  #
+  client:
+    # Arguments to entrypoint
+    # command: 'start'
+    depends_on:
+      - api
+    entrypoint: 'npm start'
+    image: node:8.6
+    ports: '7777:7777'
+    volumes:
+      - /app/node_modules
+      - /app/elm-stuff
+    working_dir: /app
 
-  web:
-    build: .
-    environment:
-      DB_HOST: db
-    ports:
-      - '3737:3737'
-    image: caldwell
+
+  api:
     depends_on:
       - db
+    entrypoint: api/docker-entrypoint
+    environment:
+      DB_HOST: db
+    image: fpco/stack-build:lts-9.10
+    ports:
+      - '3737:3737'
     volumes:
-      - .:/caldwell
-      - box:/box
-    working_dir: /caldwell
+      - caldwell-api-sync:/app:nocopy
+      - .stack-work
+      - ~/.stack
+    working_dir: /app
 
   db:
-    image: postgres
     environment:
       - POSTGRES_DB=caldwell_development
     # For linking services.
-    expose:
-      - '5432'
+    # expose:
+    #   - '5432'
+    image: postgres
     # For exposing to host machine.
-    # ports:
-    #   - 'host:5432'
+    ports:
+      - '9876:5432'
 
 volumes:
-  box:
+  caldwell-client-sync:
+    external: true
+
+  caldwell-api-sync:
+    external: true

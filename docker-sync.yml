@@ -1,0 +1,12 @@
+version: '2'
+
+syncs:
+  caldwell-client-sync:
+    src: 'client'
+    sync_excludes: ['node_modules', 'elm-stuff']
+
+  caldwell-api-sync:
+    src: 'api'
+    # sync_strategy: 'native_osx' # not needed, this is the default now
+    sync_excludes: ['.stack-work']
+
