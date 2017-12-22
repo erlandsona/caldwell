@@ -1,0 +1,6 @@
+[submodule "api"]
+	path = api
+	url = git@github.com:erlandsona/caldwell-api.git
+[submodule "client"]
+	path = client
+	url = git@github.com:erlandsona/caldwell-client.git
