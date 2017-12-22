@@ -75,15 +75,32 @@ commonConfig =
 if TARGET_ENV is 'development'
   module.exports = merge commonConfig,
     entry: [
-      # 'webpack-dev-server/app?http://localhost:7777'
       entryFile
     ]
 
     devServer:
       contentBase: outputPath
+      disableHostCheck: true # Required for usage behind a proxy, see https://github.com/webpack/webpack-dev-server/releases/tag/v2.4.3
       historyApiFallback: true
+      # For docker-compose
+      host: '0.0.0.0'
       inline: true
+      hot: true
       port: 7777
+      stats:
+        # hash: false
+        # version: false
+        # timings: false
+        # assets: false
+        chunks: false
+        # modules: false
+        # reasons: false
+        # children: false
+        # source: false
+        # errors: false
+        # errorDetails: false
+        # warnings: false
+        # publicPath: false
 
     module:
       rules: [

@@ -25,7 +25,6 @@ import Json.Decode exposing (succeed)
 -- Source
 
 import Constants exposing (..)
-import Model exposing (Model)
 import Types exposing (..)
 
 

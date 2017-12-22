@@ -50,8 +50,7 @@
     "build-dev": "webpack --profile --display-modules --config webpack.coffee",
     "prewatch": "rimraf public",
     "watch": "webpack --progress --watch --config webpack.coffee",
-    "prestart": "npm i",
-    "start": "webpack-dev-server --config webpack.coffee",
-    "postinstall": "elm-package install"
+    "prestart": "npm i --quiet",
+    "start": "export TMPDIR=/tmp; webpack-dev-server --hot --inline --config webpack.coffee"
   }
 }

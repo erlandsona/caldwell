@@ -2,10 +2,6 @@
 
 set -e
 
-# Haskell Build and Generate Docs and Client Http Code.
-stack build --system-ghc
-# stack exec elmify --system-ghc
-# stack exec docs --system-ghc
-
-# Run the Servant+Elm Application
-stack exec caldwell --system-ghc
+while true; do
+  ag -ag '.hs' | entr -r stack build --system-ghc --fast --exec "stack exec --system-ghc caldwell";
+done

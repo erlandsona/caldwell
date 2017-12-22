@@ -1,42 +1,46 @@
 version: '3'
 
 services:
-  # nginx:
-  #   build: ./nginx
-  #   image: nginx
-  #   ports:
-  #     - '80:80'
-  #   depends_on:
-  #     - web
-  #
-  client:
-    # Arguments to entrypoint
-    # command: 'start'
-    depends_on:
-      - api
-    entrypoint: 'npm start'
-    image: node:8.6
-    ports: '7777:7777'
+  nginx:
+    image: jwilder/nginx-proxy
+    ports:
+      - '80:80'
     volumes:
-      - /app/node_modules
-      - /app/elm-stuff
-    working_dir: /app
+      - /var/run/docker.sock:/tmp/docker.sock:ro
 
+  client:
+    image: node:8.6
+    entrypoint: 'npm start'
+    environment:
+      # Required by nginx-proxy
+      VIRTUAL_HOST: 'client.caldwell.band'
+    ports:
+      - '7777:7777'
+    volumes:
+      - caldwell-client-sync:/client:nocopy
+      - /client/node_modules
+      - /client/elm-stuff
+    working_dir: /client
 
   api:
+    build: api
     depends_on:
       - db
-    entrypoint: api/docker-entrypoint
+    entrypoint: './docker-entrypoint'
     environment:
       DB_HOST: db
-    image: fpco/stack-build:lts-9.10
+      STACK_ROOT: /box
+      # Required by nginx-proxy
+      VIRTUAL_HOST: 'api.caldwell.band'
     ports:
       - '3737:3737'
+    stdin_open: true
+    tty: true
     volumes:
-      - caldwell-api-sync:/app:nocopy
-      - .stack-work
-      - ~/.stack
-    working_dir: /app
+      - caldwell-api-sync:/api:nocopy
+      - /api/.stack-work
+      - box:/box
+    working_dir: /api
 
   db:
     environment:
@@ -50,6 +54,8 @@ services:
       - '9876:5432'
 
 volumes:
+  box:
+
   caldwell-client-sync:
     external: true
 
