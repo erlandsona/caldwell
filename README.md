@@ -1,6 +1,9 @@
 # caldwell-api
 Servant Api for caldwell.band
 
+
+*NOTE:* `git clone --recurse-submodules git@github.com:erlandsona/caldwell.git`
+
 This README documents the steps necessary to get the
 application up and running.
 
