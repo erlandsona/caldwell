@@ -1,47 +1,6 @@
 version: '3'
 
 services:
-  nginx:
-    image: jwilder/nginx-proxy
-    ports:
-      - '80:80'
-    volumes:
-      - /var/run/docker.sock:/tmp/docker.sock:ro
-
-  client:
-    image: node:8.6
-    entrypoint: 'npm start'
-    environment:
-      # Required by nginx-proxy
-      VIRTUAL_HOST: 'client.caldwell.band'
-    ports:
-      - '7777:7777'
-    volumes:
-      - caldwell-client-sync:/client:nocopy
-      - /client/node_modules
-      - /client/elm-stuff
-    working_dir: /client
-
-  api:
-    build: api
-    depends_on:
-      - db
-    entrypoint: './docker-entrypoint'
-    environment:
-      DB_HOST: db
-      STACK_ROOT: /box
-      # Required by nginx-proxy
-      VIRTUAL_HOST: 'api.caldwell.band'
-    ports:
-      - '3737:3737'
-    stdin_open: true
-    tty: true
-    volumes:
-      - caldwell-api-sync:/api:nocopy
-      - /api/.stack-work
-      - box:/box
-    working_dir: /api
-
   db:
     environment:
       - POSTGRES_DB=caldwell_development
@@ -53,11 +12,52 @@ services:
     ports:
       - '9876:5432'
 
-volumes:
-  box:
+  nginx:
+    image: jwilder/nginx-proxy
+    ports:
+      - '80:80'
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro
 
-  caldwell-client-sync:
-    external: true
+  # client:
+  #   image: node:8.6
+  #   entrypoint: 'npm start'
+  #   environment:
+  #     # Required by nginx-proxy
+  #     VIRTUAL_HOST: 'client.caldwell.band'
+  #   ports:
+  #     - '7777:7777'
+  #   volumes:
+  #     - caldwell-client-sync:/client:nocopy
+  #     - /client/node_modules
+  #     - /client/elm-stuff
+  #   working_dir: /client
 
-  caldwell-api-sync:
-    external: true
+  # api:
+  #   build: api
+  #   depends_on:
+  #     - db
+  #   entrypoint: './docker-entrypoint'
+  #   environment:
+  #     db_host: db
+  #     stack_root: /box
+  #     # required by nginx-proxy
+  #     virtual_host: 'api.caldwell.band'
+  #   ports:
+  #     - '3737:3737'
+  #   stdin_open: true
+  #   tty: true
+  #   volumes:
+  #     - caldwell-api-sync:/api:nocopy
+  #     - /api/.stack-work
+  #     - box:/box
+  #   working_dir: /api
+
+# volumes:
+#   box:
+
+#   caldwell-client-sync:
+#     external: true
+
+#   caldwell-api-sync:
+#     external: true
